@@ -1,0 +1,226 @@
+openapi: 3.0.0
+info:
+  title: dapi
+  description: Royal Farms Application Programming Interface
+  version: 1.0.1
+  contact:
+    name: Support
+    email: dhaifley@gmail.com
+  license:
+    name: MIT License
+    url: 'https://opensource.org/licenses/MIT'
+servers:
+  - url: 'https://api.royalfarms.io'
+    description: Production API Server
+components:
+  securitySchemes:
+    Basic:
+      type: http
+      scheme: basic
+    Token:
+      type: http
+      scheme: bearer
+  schemas:
+    error:
+      type: object
+      properties:
+        code:
+          type: integer
+        message:
+          type: string
+    result:
+      type: object
+      properties:
+        options:
+          type: object
+        value:
+          type: object
+        type:
+          type: string
+        number:
+          type: integer
+          format: int64
+        message:
+          type: string
+        error:
+          $ref: '#/components/schemas/error'
+        data:
+          type: object
+        time:
+          type: string
+          format: date-time
+    token:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        token:
+          type: string
+        user:
+          type: string
+        created:
+          type: string
+          format: date-time
+        expires:
+          type: string
+          format: date-time
+    user:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        user:
+          type: string
+        pass:
+          type: string
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+    perm:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        service:
+          type: string
+        path:
+          type: string
+        action:
+          type: string
+tags:
+  - name: dauth
+    description: Royal Farms Authentication Service
+  - name: rfpos
+    description: Royal Farms Point of Sale Data Service
+  - name: rfsafe
+    description: Royal Farms Safe Data Service
+  - name: rfapp
+    description: Royal Farms Mobile Application Service
+  - name: rfedi
+    description: Royal Farms Electronic Data Interchage Service
+  - name: rfscan
+    description: Royal Farms Scan Data Processing Service
+paths:
+  /dauth/auth:
+    get:
+      summary: Authenticate an API access token
+      description: Authenticate a provided API access token and get authorization informaiton
+      tags:
+        - dauth
+      security:
+        - Basic: []
+      parameters:
+        - in: query
+          name: token
+          required: true
+          description: A token to be authenticated
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful authentication
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/user'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        '430':
+          description: Access forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+  /dauth/login:
+    post:
+      summary: Login and obtain an API access token
+      description: Authenticate with provided credentials and obtain an API access token
+      tags:
+        - dauth
+      security:
+        - Basic: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/user'
+      responses:
+        '200':
+          description: Successful login
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/token'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        '430':
+          description: Access forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+  /dauth/logout:
+    post:
+      summary: Logout and destroy an API access token
+      description: Logout and invalidated the speicified API access token
+      tags:
+        - dauth
+      security:
+        - Basic: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/token'
+      responses:
+        '200':
+          description: Successful logout
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/token'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        '430':
+          description: Access forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'

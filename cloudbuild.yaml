@@ -1,0 +1,16 @@
+steps:
+- name: 'gcr.io/cloud-builders/go:alpine'
+  args: ['get', '-u', '.']
+  env: ['PROJECT_ROOT=github.com/dhaifley/dapi']
+- name: 'gcr.io/cloud-builders/go:alpine'
+  args: ['install', '-i', '.']
+  env: ['PROJECT_ROOT=github.com/dhaifley/dapi']
+- name: 'gcr.io/cloud-builders/go:alpine'
+  args: ['test', 'github.com/dhaifley/dapi/...']
+  env: ['PROJECT_ROOT=github.com/dhaifley/dapi']
+- name: 'gcr.io/cloud-builders/go:alpine'
+  args: ['build', '-o ./bin/dapi', 'github.com/dhaifley/dapi']
+  env: ['PROJECT_ROOT=github.com/dhaifley/dapi']
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['build', '-t', 'gcr.io/rf-services/dapi:latest', '.']
+images: ['gcr.io/rf-services/dapi:latest']

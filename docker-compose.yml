@@ -1,0 +1,16 @@
+version: "3"
+networks:
+  dapinet:
+services:
+  dapi:
+    image: dhaifley/dapi:latest
+    deploy:
+      replicas: 3
+      restart_policy:
+        condition: any
+    ports:
+      - "3611:3611"
+    extra_hosts:
+      - "dauth:10.132.114.147"
+    networks:
+      - dapinet
